@@ -38,6 +38,7 @@ SECTIONS
 		*(.data)
 		_edata = . ;
 	} > data AT> rom	/* .data セクションの「VA≠PA」対応 */
+	_data_start_load = LOADADDR(.data);	/* data領域先頭の物理アドレスを取得する */
 
 	.bss : {
 		_bss_start = . ;
