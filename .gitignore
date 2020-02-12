@@ -1,3 +1,8 @@
+# Executables
+/tools/h8write/h8write
+kzload
+*.mot
+
 # Created by https://www.gitignore.io/api/c,linux,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=c,linux,visualstudiocode
 
