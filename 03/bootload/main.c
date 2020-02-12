@@ -22,10 +22,32 @@ static int init(void) {
     return 0;
 }
 
-int main(void) {
+// 静的変数操作のサンプル
+int global_data = 0x10;         // .data セクションへ
+int global_bss;                 // .bss セクションへ
+static int static_data = 0x20;  // .data セクションへ
+static int static_bss;          // .bss セクションへ
 
+static void printval(void) {
+    // 各変数の値を出力
+    puts("global_data = "); putxval(global_data, 0); puts("\n");
+    puts("global_bss  = "); putxval(global_bss,  0); puts("\n");
+    puts("static_data = "); putxval(static_data, 0); puts("\n");
+    puts("static_bss  = "); putxval(static_bss,  0); puts("\n");
+}
+
+int main(void) {
     init();     // 初期化関数の呼び出し
     puts("Hello World!\n");
+
+    printval();
+    puts("overwrite variables.\n");
+    // 変数の値を書き換え、値を再度出力
+    global_data = 0x20;
+    global_bss  = 0x30;
+    static_data = 0x40;
+    static_bss  = 0x50;
+    printval();
 
     while (1)
         ;
