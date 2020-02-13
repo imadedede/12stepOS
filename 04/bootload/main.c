@@ -1,5 +1,6 @@
 #include "defines.h"
 #include "serial.h"
+#include "xmodem.h"
 #include "lib.h"
 
 static int init(void) {
@@ -22,35 +23,68 @@ static int init(void) {
     return 0;
 }
 
-// 静的変数操作のサンプル
-int global_data = 0x10;         // .data セクションへ
-int global_bss;                 // .bss セクションへ
-static int static_data = 0x20;  // .data セクションへ
-static int static_bss;          // .bss セクションへ
+// メモリの16進数ダンプ出力
+static int dump(char *buf, long size) {
+    long i;
 
-static void printval(void) {
-    // 各変数の値を出力
-    puts("global_data = "); putxval(global_data, 0); puts("\n");
-    puts("global_bss  = "); putxval(global_bss,  0); puts("\n");
-    puts("static_data = "); putxval(static_data, 0); puts("\n");
-    puts("static_bss  = "); putxval(static_bss,  0); puts("\n");
+    if (size < 0) {
+        puts("no data.\n");
+        return -1;
+    }
+    for (i = 0; i < size; i++) {
+        putxval(buf[i], 2);
+        if ((i & 0xf) == 15) {
+            puts("\n");
+        } else {
+            if ((i & 0xf) == 7) puts(" ");
+            puts(" ");
+        }
+    }
+    puts("\n");
+
+    return 0;
+}
+
+// ウェイト用のサービス関数を追加
+static void wait(void) {
+    volatile long i;
+    for (i = 0; i < 300000; i++)
+        ;
 }
 
 int main(void) {
-    init();     // 初期化関数の呼び出し
-    puts("Hello World!\n");
+    static char buf[16];
+    static long size = -1;
+    static unsigned char *loadbuf = NULL;
+    extern int buffer_start;    // リンカスクリプトで定義されているバッファ
 
-    printval();
-    puts("overwrite variables.\n");
-    // 変数の値を書き換え、値を再度出力
-    global_data = 0x20;
-    global_bss  = 0x30;
-    static_data = 0x40;
-    static_bss  = 0x50;
-    printval();
+    init();
 
-    while (1)
-        ;
-    
+    puts("kzload (kozos boot loader) started.\n");
+
+    // コンソールからのコマンドに応じて動作する
+    while (1) {
+        puts("kzload> ");   // プロンプト表示
+        gets(buf);          // シリアルからのコマンド受信
+
+        if (!strcmp(buf, "load")) { // XMODEM でのファイルのダウンロード
+            loadbuf = (char *)(&buffer_start);
+            size = xmodem_recv(loadbuf);
+            wait();                 // 転送アプリが終了し端末アプリに制御が戻るまで待ち合わせる
+            if (size < 0) {
+                puts("\nXMODEM receive error!\n");
+            } else {
+                puts("\nXMODEM receive succeeded.!\n");
+            }
+        } else if (!strcmp(buf, "dump")) {  // メモリの16進数ダンプ表示
+            puts("size: ");
+            putxval(size, 0);
+            puts("\n");
+            dump(loadbuf, size);
+        } else {
+            puts("unknown.\n");
+        }
+    }
+
     return 0;
 }
