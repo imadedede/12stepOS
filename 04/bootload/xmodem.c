@@ -76,7 +76,7 @@ long xmodem_recv(char *buf) {
 
         c = serial_recv_byte(SERIAL_DEFAULT_DEVICE); // 1文字の受信
 
-        if (c == XMODEM_EOF) {          // 受信終了
+        if (c == XMODEM_EOT) {          // 受信終了
             // EOT を受信したら終了する
             serial_send_byte(SERIAL_DEFAULT_DEVICE, XMODEM_ACK);
             break;
