@@ -40,7 +40,7 @@ volatile uint8 scmr;
 // SSR の各ビットの定義
 #define H8_3069F_SCI_SSR_MPBT   (1<<0)
 #define H8_3069F_SCI_SSR_MPB    (1<<1)
-#define H8_3069F_SCI_SSR_TEMD   (1<<2)
+#define H8_3069F_SCI_SSR_TEND   (1<<2)
 #define H8_3069F_SCI_SSR_PER    (1<<3)
 #define H8_3069F_SCI_SSR_FERERS (1<<4)
 #define H8_3069F_SCI_SSR_ORER   (1<<5)
