@@ -1,6 +1,7 @@
 # Executables
 /tools/h8write/h8write
 kzload
+kozos
 *.mot
 
 # Created by https://www.gitignore.io/api/c,linux,visualstudiocode

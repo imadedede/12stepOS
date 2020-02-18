@@ -14,28 +14,20 @@ OBJDUMP = $(BINDIR)/$(ADDNAME)objdump
 RANLIB  = $(BINDIR)/$(ADDNAME)ranlib
 STRIP   = $(BINDIR)/$(ADDNAME)strip
 
-# フラッシュ ROM 書き込みツール
-H8WRITE = ../../tools/h8write/h8write
-
-# シリアル接続先
-# FreeBSD-4.x:/dev/cuaaX, FreeBSD-6.x:/dev/cuadX, FreeBSD(USB):/dev/cuaUx
-# Linux:/dev/ttySx, Linux(USB):/dev/ttyUSBx, Windows:comX
-H8WRITE_SERDEV = /dev/ttyUSB0
-
 # コンパイルするソースコード群
-OBJS = vector.o startup.o main.o
-OBJS += lib.o serial.o xmodem.o elf.o
+OBJS  = startup.o main.o
+OBJS += lib.o serial.o
 
 # 生成する実行形式のファイル名
-TARGET = kzload
+TARGET = kozos
 
 # コンパイルオプション
-CFLAGS = -Wall -mh -nostdinc -nostdlib -fno-builtin
+CFLAGS  = -Wall -mh -nostdinc -nostdlib -fno-builtin
 #CFLAGS += -mint32 # int を32ビットにすると掛け算／割り算ができなくなる
 CFLAGS += -I.
 #CFLAGS += -g
 CFLAGS += -Os
-CFLAGS += -DKZLOAD
+CFLAGS += -DKOZOS
 
 # リンクオプション
 LFLAGS = -static -T ld.scr -L.
@@ -58,16 +50,6 @@ $(TARGET):		$(OBJS)
 .s.o:			$<
 				$(CC) -c $(CFLAGS) $<
 
-# モトローラSレコード・フォーマットへの変換
-$(TARGET).mot:	$(TARGET)
-				$(OBJCOPY) -O srec $(TARGET) $(TARGET).mot
-
-image:			$(TARGET).mot
-
-# フラッシュ ROM への転送
-write:			$(TARGET).mot
-				$(H8WRITE) -3069 -f20 $(TARGET).mot $(H8WRITE_SERDEV)
-
 # フォルダの掃除
 clean:
-				rm -f $(OBJS) $(TARGET) $(TARGET).elf $(TARGET).mot
+				rm -f $(OBJS) $(TARGET) $(TARGET).elf
