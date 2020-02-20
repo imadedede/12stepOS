@@ -17,6 +17,7 @@ void (*vectors[])(void) = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     intr_serintr, intr_serintr, intr_serintr, intr_serintr,     // SCI0 の割込みベクタ
     intr_serintr, intr_serintr, intr_serintr, intr_serintr,     // SCI1 の割込みベクタ
     intr_serintr, intr_serintr, intr_serintr, intr_serintr,     // SCI2 の割込みベクタ
