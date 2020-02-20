@@ -1,4 +1,5 @@
 #include "defines.h"
+#include "interrupt.h"
 #include "serial.h"
 #include "xmodem.h"
 #include "elf.h"
@@ -17,6 +18,9 @@ static int init(void) {
     // この処理以降でないとグローバル変数が初期化されていないので注意
     memcpy(&data_start, &data_start_load, (long)&edata - (long)&data_start);
     memset(&bss_start, 0, (long)&ebss - (long)&bss_start);
+
+    // ソフトウェア割込みベクタを初期化する
+    softvec_init();
 
     // シリアルの初期化
     serial_init(SERIAL_DEFAULT_DEVICE); // シリアルデバイスの初期化
@@ -60,6 +64,8 @@ int main(void) {
     char *entry_point;
     void (*f)(void);
     extern int buffer_start;    // リンカスクリプトで定義されているバッファ
+
+    INTR_DISABLE;   // 割込み無効にする
 
     init();
 
