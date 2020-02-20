@@ -16,12 +16,3 @@ int softvec_setintr(softvec_type_t type, softvec_handler_t handler) {
     SOFTVECS[type] = handler;
     return 0;
 }
-
-// 共通割込みハンドラ
-// ソフトウェア割込みベクタを見て、各ハンドラに分岐する
-void interrupt(softvec_type_t type, unsigned long sp) {
-    softvec_handler_t handler = SOFTVECS[type];
-    // ソフトウェア割込みベクタが設定されているならば、ハンドラを呼び出す
-    if (handler)
-        handler(type, sp);
-}
