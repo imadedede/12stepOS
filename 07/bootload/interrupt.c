@@ -6,7 +6,7 @@
 int softvec_init(void) {
     int type;
     // すべてのソフトウェア割込みベクタを NULL に設定する
-    for (type = 0; type = SOFTVEC_TYPE_NUM; type++)
+    for (type = 0; type < SOFTVEC_TYPE_NUM; type++)
         softvec_setintr(type, NULL);
     return 0;
 }
@@ -14,6 +14,7 @@ int softvec_init(void) {
 // ソフトウェア割込みベクタの設定
 int softvec_setintr(softvec_type_t type, softvec_handler_t handler) {
     SOFTVECS[type] = handler;
+    return 0;
 }
 
 // 共通割込みハンドラ
