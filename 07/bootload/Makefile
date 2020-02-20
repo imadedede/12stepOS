@@ -23,7 +23,7 @@ H8WRITE = ../../tools/h8write/h8write
 H8WRITE_SERDEV = /dev/ttyUSB0
 
 # コンパイルするソースコード群
-OBJS = vector.o startup.o main.o
+OBJS  = vector.o startup.o intr.o main.o interrupt.o
 OBJS += lib.o serial.o xmodem.o elf.o
 
 # 生成する実行形式のファイル名
@@ -42,6 +42,7 @@ LFLAGS = -static -T ld.scr -L.
 
 .SUFFIXES: .c .o
 .SUFFIXES: .s .o
+.SUFFIXES: .S .o
 
 all:			$(TARGET)
 # 実行形式の生成ルール
@@ -56,6 +57,9 @@ $(TARGET):		$(OBJS)
 
 # アセンブラファイルのアセンブルルール
 .s.o:			$<
+				$(CC) -c $(CFLAGS) $<
+
+.S.o:			$<
 				$(CC) -c $(CFLAGS) $<
 
 # モトローラSレコード・フォーマットへの変換
