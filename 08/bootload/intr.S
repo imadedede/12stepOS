@@ -16,8 +16,13 @@ _intr_softerr:
 		mov.l	er0,@-er7
 		# interrupt() の呼び出し
 		mov.l	er7,er1						# 第二引数にスタックポインタを設定
+		mov.l	#_intrstack,sp				# 割込みスタックを利用する
+		mov.l	er1, @-er7					# 旧スタックポインタの値を割込みスタックに保存
 		mov.w	#SOFTVEC_TYPE_SOFTERR,r0	# 第一引数に intr.h の SOFTVEC_TYPE_SOFTERR を設定
 		jsr		@_interrupt					# 呼び出し
+		# 旧スタックポインタの値を割込みスタックから復旧する
+		mov.l	@er7+,er1
+		mov.l	er1,er7
 		# スタックから汎用レジスタの値を復旧する
 		mov.l	@er7+,er0
 		mov.l	@er7+,er1
@@ -43,8 +48,13 @@ _intr_syscall:
 		mov.l	er0,@-er7
 		# interrupt() の呼び出し
 		mov.l	er7,er1						# 第二引数にスタックポインタを設定
+		mov.l	#_intrstack,sp				# 割込みスタックを利用する
+		mov.l	er1, @-er7					# 旧スタックポインタの値を割込みスタックに保存
 		mov.w	#SOFTVEC_TYPE_SYSCALL,r0	# 第一引数に intr.h の SOFTVEC_TYPE_SYSCALL を設定
 		jsr		@_interrupt					# 呼び出し
+		# 旧スタックポインタの値を割込みスタックから復旧する
+		mov.l	@er7+,er1
+		mov.l	er1,er7
 		# スタックから汎用レジスタの値を復旧する
 		mov.l	@er7+,er0
 		mov.l	@er7+,er1
@@ -70,8 +80,13 @@ _intr_serintr:
 		mov.l	er0,@-er7
 		# interrupt() の呼び出し
 		mov.l	er7,er1						# 第二引数にスタックポインタを設定
+		mov.l	#_intrstack,sp				# 割込みスタックを利用する
+		mov.l	er1, @-er7					# 旧スタックポインタの値を割込みスタックに保存
 		mov.w	#SOFTVEC_TYPE_SERINTR,r0	# 第一引数に intr.h の SOFTVEC_TYPE_SERINTR を設定
 		jsr		@_interrupt					# 呼び出し
+		# 旧スタックポインタの値を割込みスタックから復旧する
+		mov.l	@er7+,er1
+		mov.l	er1,er7
 		# スタックから汎用レジスタの値を復旧する
 		mov.l	@er7+,er0
 		mov.l	@er7+,er1
