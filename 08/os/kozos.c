@@ -148,7 +148,6 @@ static kz_thread_id_t thread_run(kz_func_t func, char *name,
     *(--sp) = 0; // ER3
     *(--sp) = 0; // ER2
     *(--sp) = 0; // ER1
-    *(--sp) = 0; // ER0
 
     // スレッドのスタートアップ thread_init() に渡す引数
     *(--sp) = (uint32)thp;  // ER0 第一引数
