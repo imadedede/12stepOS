@@ -14,6 +14,8 @@ int kz_sleep(void);                 // スレッドをレディキューから�
 int kz_wakeup(kz_thread_id_t id);   // スリープ状態のスレッドをレディキューにつなぐ
 kz_thread_id_t kz_getid(void);      // 自身のスレッド ID を取得する
 int kz_chpri(int priority);         // スレッドの優先度を変更する
+void *kz_kmalloc(int size);         // 動的メモリ確保
+int kz_kmfree(void *p);             // 動的メモリ開放
 
 // ライブラリ関数
 // 初期スレッドを起動し OS の動作を開始する
@@ -26,11 +28,6 @@ void kz_syscall(kz_syscall_type_t type, kz_syscall_param_t *param);
 
 // ユーザスレッド
 // ユーザスレッドのメイン関数
-int test09_1_main(int argc, char *argv[]);
-int test09_2_main(int argc, char *argv[]);
-int test09_3_main(int argc, char *argv[]);
-extern kz_thread_id_t test09_1_id;
-extern kz_thread_id_t test09_2_id;
-extern kz_thread_id_t test09_3_id;
+int test10_1_main(int argc, char *argv[]);
 
 #endif
