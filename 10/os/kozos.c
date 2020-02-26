@@ -3,6 +3,7 @@
 #include "intr.h"
 #include "interrupt.h"
 #include "syscall.h"
+#include "memory.h"
 #include "lib.h"
 
 #define THREAD_NUM 6        // TCB の個数
@@ -234,6 +235,20 @@ static int thread_chpri(int priority) {
     putcurrent();
     return old;
 }
+
+// システム・コールの処理 kz_kmalloc():動的メモリ獲得
+static void *thread_kmalloc(int size) {
+    putcurrent();
+    return kzmem_alloc(size); // メモリの確保を行う
+}
+
+// システムコールの処理 kz_kfree():メモリ解放
+static int thread_kmfree(char *p) {
+    kzmem_free(p);
+    putcurrent();
+    return 0;
+}
+
 // 割込みハンドラの登録
 static void thread_intr(softvec_type_t type, unsigned long sp);
 static int setintr(softvec_type_t type, kz_handler_t handler) {
@@ -276,6 +291,12 @@ static void call_functions(kz_syscall_type_t type, kz_syscall_param_t * p) {
     case KZ_SYSCALL_TYPE_EXIT:  // kz_exit()
         // TCB が削除されるので、戻り値を書き込んではいけない
         thread_exit();
+        break;
+    case KZ_SYSCALL_TYPE_KMALLOC:// kz_kmalloc()
+        p->un.kmalloc.ret = thread_kmalloc(p->un.kmalloc.size);
+        break;
+    case KZ_SYSCALL_TYPE_KMFREE:// kz_kmfree()
+        p->un.kmfree.ret = thread_kmfree(p->un.kmfree.p);
         break;
     default:
         break;
@@ -352,6 +373,7 @@ static void thread_intr(softvec_type_t type, unsigned long sp) {
 
 void kz_start(kz_func_t func, char *name, int priority, int stacksize,
                 int argc, char *argv[]) {
+    kzmem_init(); // 動的メモリの処理化
     // 
     // 以降で呼び出すスレッド間のライブラリ関数の内部で current を
     // 見ている場合があるので、current を NULL に初期化しておく
