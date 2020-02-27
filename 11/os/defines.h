@@ -13,4 +13,11 @@ typedef uint32 kz_thread_id_t;                      // スレッド ID
 typedef int (*kz_func_t)(int argc, char *argv[]);   // スレッドのメイン関数の型
 typedef void (*kz_handler_t)(void);                 // 割込みハンドラの型
 
+// メッセージ ID の定義
+typedef enum {
+    MSGBOX_ID_MSGBOX1 = 0,
+    MSGBOX_ID_MSGBOX2,
+    MSGBOX_ID_NUM
+} kz_msgbox_id_t;
+
 #endif
