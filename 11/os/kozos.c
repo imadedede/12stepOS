@@ -509,7 +509,7 @@ void kz_start(kz_func_t func, char *name, int priority, int stacksize,
     memset(readyque, 0, sizeof(readyque));
     memset(threads,  0, sizeof(threads));
     memset(handlers, 0, sizeof(handlers));
-    memset(msgboxes, 0, sizesof(msgboxes));
+    memset(msgboxes, 0, sizeof(msgboxes));
 
     // 割込みハンドラの登録
     setintr(SOFTVEC_TYPE_SYSCALL, syscall_intr);    // システム・コール
