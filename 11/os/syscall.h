@@ -14,6 +14,8 @@ typedef enum {
     KZ_SYSCALL_TYPE_CHPRI,      // kz_chpri()
     KZ_SYSCALL_TYPE_KMALLOC,    // kz_kmalloc()
     KZ_SYSCALL_TYPE_KMFREE,     // kz_kmfree()
+    KZ_SYSCALL_TYPE_SEND,       // kz_send()
+    KZ_SYSCALL_TYPE_RECV,       // kz_recv()
 } kz_syscall_type_t;
 
 // システム・コール呼び出し時のパラメータ格納域の定義
@@ -56,6 +58,18 @@ typedef struct {
             char *p;
             int ret;
         } kmfree;
+        struct {
+            kz_msgbox_id_t id;
+            int size;
+            char *p;
+            int ret;
+        } send;
+        struct {
+            kz_msgbox_id_t id;
+            int *sizep;
+            char **pp;
+            kz_thread_id_t ret;
+        } recv;
     } un;   // 複数のパラメータ領域を同時に利用することはないため、共用体で定義する
 } kz_syscall_param_t;
 
