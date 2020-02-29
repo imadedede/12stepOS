@@ -6,7 +6,7 @@
 #include "lib.h"
 #include "consdrv.h"
 
-#define CONS_BUFFER_SIZE 14
+#define CONS_BUFFER_SIZE 24
 // コンソール管理用の構造体の定義
 static struct consreg {
     kz_thread_id_t id;  // コンソールを利用するスレッド
