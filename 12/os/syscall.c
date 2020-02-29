@@ -115,7 +115,7 @@ void *kx_kmalloc(int size) {
 int kx_kmfree(void* p) {
     kz_syscall_param_t param;
     param.un.kmfree.p = p;
-    kx_srvcall(KZ_SYSCALL_TYPE_KMFREE, &param);
+    kz_srvcall(KZ_SYSCALL_TYPE_KMFREE, &param);
     return param.un.kmfree.ret;
 }
 
@@ -124,6 +124,6 @@ int kx_send(kz_msgbox_id_t id, int size, char *p) {
     param.un.send.id = id;
     param.un.send.size = size;
     param.un.send.p = p;
-    kx_srvcall(KZ_SYSCALL_TYPE_SEND, &param);
+    kz_srvcall(KZ_SYSCALL_TYPE_SEND, &param);
     return param.un.send.ret;
 }
