@@ -2,6 +2,7 @@
 #define _KOZOS_SYSCALL_H_INCLUDED_
 
 #include "defines.h"
+#include "interrupt.h"
 
 // システム・コール番号の定義
 typedef enum {
@@ -16,6 +17,7 @@ typedef enum {
     KZ_SYSCALL_TYPE_KMFREE,     // kz_kmfree()
     KZ_SYSCALL_TYPE_SEND,       // kz_send()
     KZ_SYSCALL_TYPE_RECV,       // kz_recv()
+    KZ_SYSCALL_TYPE_SETINTR,    // kz_setintr()
 } kz_syscall_type_t;
 
 // システム・コール呼び出し時のパラメータ格納域の定義
@@ -70,6 +72,11 @@ typedef struct {
             char **pp;
             kz_thread_id_t ret;
         } recv;
+        struct {
+            softvec_type_t type;
+            kz_handler_t handler;
+            int ret;
+        } setintr;
     } un;   // 複数のパラメータ領域を同時に利用することはないため、共用体で定義する
 } kz_syscall_param_t;
 
