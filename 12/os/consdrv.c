@@ -121,3 +121,41 @@ static void consdrv_intr(void) {
         }
     }
 }
+
+// 初期化処理
+static int consdrv_init(void) {
+    memset(consreg, 0, sizeof(consreg));
+    return 0;
+}
+
+// スレッドからの要求を処理する
+static int consdrv_command(struct consreg *cons, kz_thread_id_t id,
+                            int index, int size, char *command) {
+    switch (command[0]) {
+    case CONSDRV_CMD_USE:   // コンソール・ドライバの使用開始
+        cons->id = id;
+        cons->index = command[1] - '0';
+        cons->send_buf = kz_kmalloc(CONS_BUFFER_SIZE); // 送信バッファを獲得
+        cons->recv_len = kz_kmalloc(CONS_BUFFER_SIZE); // 受信バッファを獲得
+        cons->send_len = 0;
+        cons->recv_len = 0;
+        serial_init(cons->index); // シリアルの初期化
+        serial_intr_recv_enable(cons->index); // 受信割込み有効化(受信開始)
+        break;
+
+    case CONSDRV_CMD_WRITE: // コンソールへの文字列出力
+        // 
+        // send_string() では送信バッファを操作しており再入不可なので
+        // 排他のために割込み禁止にして呼び出す。
+        // 
+        INTR_DISABLE;   // 排他のため、割込み禁止にする
+        send_string(cons, command + 1, size - 1); // 文字列の出力
+        INTR_ENABLE;    // 割込み有効に戻す
+        break;
+
+    default:
+        break;
+    }
+
+    return 0;
+}
