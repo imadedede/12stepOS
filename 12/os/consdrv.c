@@ -55,3 +55,69 @@ static void send_string(struct consreg *cons, char *str, int len) {
         send_char(cons);
     }
 }
+
+// 
+// 以下は割込みハンドラから呼ばれる割込み処理であり、非同期で呼ばれるので、
+// ライブラリ関数などを呼び出す場合には注意が必要。
+// 基本として、以下のいずれかに当てはまる関数しか呼び出してはいけない。
+// ・再入可能である
+// ・スレッドから呼ばれることはない関数である
+// また非コンテキスト状態で呼ばれるため、システム・コールは利用してはいけない。
+// (サービス・コールを利用すること)
+// 
+static int consdrv_intrproc(struct consreg *cons) {
+    unsigned char c;
+    char *p;
+
+    if (serial_is_recv_enable(cons->index)) { // 受信割込み
+        c = serial_recv_byte(cons->index);
+        if (c == '\r') // 改行コード変換 (\r→\n)
+            c = '\n';
+        
+        send_string(cons, &c, 1); // エコーバック処理
+        if (cons->id) {
+            if (c != '\n') {
+                // 改行でないなら、受信バッファにバッファリングする
+                cons->recv_buf[cons->recv_len++] = c;
+            } else {
+                // 
+                // Enter が押されたら、バッファの内容を
+                // コマンド処理スレッドに通知する
+                // (割込みハンドラなので、サービス・コールを利用する)
+                // 
+                p = kx_kmalloc(CONS_BUFFER_SIZE);
+                memcpy(p, cons->recv_buf, cons->recv_len);
+                kx_send(MSGBOX_ID_CONSINPUT, cons->recv_len, p);
+                cons->recv_len = 0;
+            }
+        }
+    }
+
+    if (serial_is_send_enable(cons->index)) { // 送信割込み
+        if (!cons->id || !cons->send_len) {
+            // 送信データが無いならば送信処理終了
+            serial_intr_send_disable(cons->index);
+        } else {
+            // 送信データがあるならば、引き続き送信する
+            send_char(cons);
+        }
+    }
+
+    return 0;
+}
+
+// 割込みハンドラ
+static void consdrv_intr(void) {
+    int i;
+    struct consreg *cons;
+
+    for (i = 0; i < CONSDRV_DEVICE_NUM; i++) {
+        cons = &consreg[i];
+        if (cons->id) {
+            if (serial_is_send_enable(cons->index) ||
+                serial_is_recv_enable(cons->index))
+                // 割込みがあるならば、割込み処理を呼び出す
+                consdrv_intrproc(cons);
+        }
+    }
+}
