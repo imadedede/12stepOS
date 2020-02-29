@@ -2,6 +2,7 @@
 #define _KOZOS_H_INCLUDED_
 
 #include "defines.h"
+#include "interrupt.h"
 #include "syscall.h"
 
 // システムコール
