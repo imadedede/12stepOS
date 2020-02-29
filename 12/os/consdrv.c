@@ -17,6 +17,7 @@ static struct consreg {
     int send_len;       // 送信バッファ中のデータサイズ
     int recv_len;       // 受信バッファ中のデータサイズ
 
+    // kozos.c の kz_msbox と同様の理由で、ダミー・メンバでサイズ調整する
     long dummy[3];
 } consreg[CONSDRV_DEVICE_NUM];
 
