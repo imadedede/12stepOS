@@ -136,7 +136,7 @@ static int consdrv_command(struct consreg *cons, kz_thread_id_t id,
         cons->id = id;
         cons->index = command[1] - '0';
         cons->send_buf = kz_kmalloc(CONS_BUFFER_SIZE); // 送信バッファを獲得
-        cons->recv_len = kz_kmalloc(CONS_BUFFER_SIZE); // 受信バッファを獲得
+        cons->recv_buf = kz_kmalloc(CONS_BUFFER_SIZE); // 受信バッファを獲得
         cons->send_len = 0;
         cons->recv_len = 0;
         serial_init(cons->index); // シリアルの初期化
