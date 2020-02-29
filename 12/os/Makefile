@@ -19,7 +19,7 @@ OBJS  = startup.o main.o interrupt.o
 OBJS += lib.o serial.o
 
 # OS のソースコードをコンパイル対象に追加
-OBJS += kozos.o syscall.o memory.o test11_1.o test11_2.o
+OBJS += kozos.o syscall.o memory.o consdrv.o command.o
 
 # 生成する実行形式のファイル名
 TARGET = kozos
