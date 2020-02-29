@@ -159,3 +159,23 @@ static int consdrv_command(struct consreg *cons, kz_thread_id_t id,
 
     return 0;
 }
+
+int consdrv_main(int argc, char *argv[]) {
+    int size;
+    int index;
+    kz_thread_id_t id;
+    char *p;
+
+    consdrv_init();
+    kz_setintr(SOFTVEC_TYPE_SERINTR, consdrv_intr); // 割込みハンドラ設定
+
+    while(1) {
+        // 他スレッドからのコマンド受付
+        id = kz_recv(MSGBOX_ID_CONSOUTPUT, &size, &p);
+        index = p[0] - '0';
+        consdrv_command(&consreg[index], id, index, size - 1, p + 1);
+        kz_kmfree(p);
+    }
+
+    return 0;
+}
